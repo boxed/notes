@@ -21,19 +21,16 @@ Write the implementation of your API like this:
 
 .. code:: python
 
+    @declarative_member
     class Column(object):
         def __init__(self, name):
             # ...
     
+    @declarative('columns')
     class Table(object):
         def __init__(self, columns):
             self.columns = columns
             # ...
-            
-    foo_table = Table(columns=[Column('foo'), Column('bar')])
-
-and just by adding the decorator `@declarative_member` on `Column` and `@declarative('columns')` on `Table` 
-you get the declarative style API obove:
 
 This makes it super easy to create declarative style APIs for all your code.
         
