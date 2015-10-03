@@ -87,3 +87,5 @@ In tri.query instead this is accomplished by having kwargs with a prefix followe
 
 This design philosophy creates layers that compose cleanly without losing any of the flexibility of the layers below.
 
+Lambdas everywhere
+------------------
