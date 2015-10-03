@@ -6,6 +6,17 @@ tri.declarative contains tools to make it easy to create declarative constructs 
 @declarative
 ------------
 
+Easily write libraries with APIs like: 
+
+.. code:: python
+
+    class FooTable(Table):
+        foo = Column()
+        bar = Column()
+
+    f = FooTable() # equivalent to `Table([Column(name='foo'), Column('bar')])`
+
+
 Write the implementation of your API like this:
 
 .. code:: python
@@ -22,14 +33,8 @@ Write the implementation of your API like this:
     foo_table = Table(columns=[Column('foo'), Column('bar')])
 
 and just by adding the decorator `@declarative_member` on `Column` and `@declarative('columns')` on `Table` 
-you can use the API as before AND like this:
+you get the declarative style API obove:
 
-.. code:: python
-
-    class FooTable(Table):
-        foo = Column()
-        bar = Column()
-        
 This makes it super easy to create declarative style APIs for all your code.
         
 
