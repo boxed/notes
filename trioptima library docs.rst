@@ -21,7 +21,7 @@ Write the implementation of your API like this:
 
 .. code:: python
 
-    @declarative_member
+    @creation_ordered
     class Column(object):
         def __init__(self, name):
             # ...
