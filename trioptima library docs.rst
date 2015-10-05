@@ -90,3 +90,26 @@ Callables everywhere
 --------------------
 
 In order to create nice declarative code that still works for dynamic situations some things needs to be specified as behaviors, not as static data. To make this easy we aim to make all configuration parameters support both a value directly but also accept callables. The evaluation from a callable to the concrete value is performed as late as possible to enable maximum amount of dynamic behavior.
+
+Things that relate to eachother should be close together
+--------------------------------------------------------
+
+A good example for code where this rule is not applied is django forms:
+
+.. code:: python
+    
+    class FooForm(Form):
+        bar = CharField()
+        
+        [... lots and lots of field definitions ...]
+        
+        def clean_bar(self):
+            # SURPRISE! Here we totally change the behavior of bar!
+            
+In tri.form we make sure that the behavior that relates to a field is declared on the field:
+
+.. code:: python
+    
+    class FooForm(Form):
+        bar = CharField(parse=lambda ...)  # or you can create a staticmethod on FooForm and reference it here
+
