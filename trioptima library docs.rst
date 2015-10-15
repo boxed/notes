@@ -1,76 +1,3 @@
-tri.declarative
-===============
-
-tri.declarative contains tools to make it easy to create declarative constructs in your code. 
-
-:code:`@declarative`
----------------------
-
-Easily write libraries with APIs like: 
-
-.. code:: python
-
-    class FooTable(Table):
-        foo = Column()
-        bar = Column()
-
-    f = FooTable() # equivalent to `Table([Column(name='foo'), Column('bar')])`
-
-
-Write the implementation of your API like this:
-
-.. code:: python
-
-    @creation_ordered
-    class Column(object):
-        def __init__(self, name):
-            # ...
-    
-    @declarative('columns')
-    class Table(object):
-        def __init__(self, columns):
-            self.columns = columns
-            # ...
-
-This makes it super easy to create declarative style APIs for all your code.
-        
-
-:code:`evaluate_recursive` + :code:`filter_show`
-------------------------------------------------
-
-Define some immutable structure that you evaluate at some later time. We've used this for 
-example to define the behavior of menus. Instead of this:
-
-.. code:: python
-    
-    def menu_view_func(request):
-        menu_items = [
-            MenuItem('foo'), 
-            MenuItem('bar'),
-        ]
-        if request.user.is_staff:
-            menu_items.append(MenuItem('baz'))
-        menu_items.append(MenuItem('quuz'))
-        return render_menu(menu_items)
-    
-write this:
-
-.. code:: python
-
-    menu_items = [
-        MenuItem('foo'), 
-        MenuItem('bar'),
-        MenuItem('baz', show=lambda request: request.user.is_staff),
-        MenuItem('quuz'),
-    ]
-    
-    def menu_view_func(request):
-        return render_menu(filter_show(evaluate_recursive(menu_items, request=request)))
-        
-:code:`evaluate_recursive` will return a new list with new instances of :code:`MenuItem` where the 
-member :code:`show` on the :code:`MenuItem` baz has been evaluated to True or False. Then :code:`filter_show` will return a new list without all MenuItems where show is False.
-
-
 tri.* design philosophy
 =======================
 
@@ -159,4 +86,77 @@ In tri.form we make sure that the behavior that relates to a field is declared o
     
     class FooForm(Form):
         bar = CharField(parse=lambda ...)  # or you can create a staticmethod on FooForm and reference it here
+
+
+tri.declarative
+===============
+
+tri.declarative contains tools to make it easy to create declarative constructs in your code. 
+
+:code:`@declarative`
+---------------------
+
+Easily write libraries with APIs like: 
+
+.. code:: python
+
+    class FooTable(Table):
+        foo = Column()
+        bar = Column()
+
+    f = FooTable() # equivalent to `Table([Column(name='foo'), Column('bar')])`
+
+
+Write the implementation of your API like this:
+
+.. code:: python
+
+    @creation_ordered
+    class Column(object):
+        def __init__(self, name):
+            # ...
+    
+    @declarative('columns')
+    class Table(object):
+        def __init__(self, columns):
+            self.columns = columns
+            # ...
+
+This makes it super easy to create declarative style APIs for all your code.
+        
+
+:code:`evaluate_recursive` + :code:`filter_show`
+------------------------------------------------
+
+Define some immutable structure that you evaluate at some later time. We've used this for 
+example to define the behavior of menus. Instead of this:
+
+.. code:: python
+    
+    def menu_view_func(request):
+        menu_items = [
+            MenuItem('foo'), 
+            MenuItem('bar'),
+        ]
+        if request.user.is_staff:
+            menu_items.append(MenuItem('baz'))
+        menu_items.append(MenuItem('quuz'))
+        return render_menu(menu_items)
+    
+write this:
+
+.. code:: python
+
+    menu_items = [
+        MenuItem('foo'), 
+        MenuItem('bar'),
+        MenuItem('baz', show=lambda request: request.user.is_staff),
+        MenuItem('quuz'),
+    ]
+    
+    def menu_view_func(request):
+        return render_menu(filter_show(evaluate_recursive(menu_items, request=request)))
+        
+:code:`evaluate_recursive` will return a new list with new instances of :code:`MenuItem` where the 
+member :code:`show` on the :code:`MenuItem` baz has been evaluated to True or False. Then :code:`filter_show` will return a new list without all MenuItems where show is False.
 
