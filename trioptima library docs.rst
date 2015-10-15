@@ -4,7 +4,7 @@ tri.* design philosophy
 Usages of :code:`__` syntax
 ---------------------
 
-We really like the syntax in django queries where you can do :code:`Q(foo__bar=1)` to traverse attributes or table relations. We think this syntax can be used much more generally. For example in tri.form you can use the :code:`__` syntax to easily create forms that can edit fields in other tables. Say you have a :code:`User` model but you store other data in another model called :code:`UserDetails` you can do :code:`user_details__eye_color = Field()` in your form to access that property. 
+We really like the syntax in Django queries where you can do :code:`Q(foo__bar=1)` to traverse attributes or table relations. We think this syntax can be used much more generally. For example in tri.form you can use the :code:`__` syntax to easily create forms that can edit fields in other tables. Say you have a :code:`User` model but you store other data in another model called :code:`UserDetails` then you can do :code:`user_details__eye_color = Field()` in your form to access that property. 
 
 But we also use it to expose configurability of underlying layers from the layers above. An example of this is in tri.query you can declare a :code:`Variable` which is a thing you can search for. This can have an HTML GUI implemented by a tri.form :code:`Field`. Now, say you want to change something in the display of this GUI. Normally in an OOP world you have to subclass :code:`Field` to create your changed behavior, then subclass :code:`Variable` to use your new class as the GUI. This becomes a lot of code, especially if this configuration is a one-off! 
 
@@ -34,7 +34,7 @@ Layered à la carte customization
 A common problem with many library designs is that they fall into two categories:
 
 - Lots and lots of boilerplate to get going (e.g. Win32 API)
-- Super easy to get going, but if you want to customize something you have to rewrite huge chunks or even the entire thing (.NET GUI tables, djangos ModelForm)
+- Super easy to get going, but if you want to customize something you have to rewrite huge chunks or even the entire thing (.NET GUI tables, Django's ModelForm)
 
 We believe it doesn't have to be like this. An example of a design that handles this nicely is tri.form. You can create a form easily like this:
 
@@ -68,7 +68,7 @@ When writing declarative definitions for what you want with lambdas and then eva
 Things that relate to each other should be close together
 ---------------------------------------------------------
 
-A good example for code where this rule is not applied is django forms:
+A good example for code where this rule is not applied is Django forms:
 
 .. code:: python
     
@@ -104,7 +104,7 @@ Easily write libraries with APIs like:
         foo = Column()
         bar = Column()
 
-    f = FooTable() # equivalent to `Table([Column(name='foo'), Column('bar')])`
+    f = FooTable() # equivalent to `Table([Column(name='foo'), Column(name='bar')])`
 
 
 Write the implementation of your API like this:
@@ -116,7 +116,7 @@ Write the implementation of your API like this:
         def __init__(self, name):
             # ...
     
-    @declarative('columns')
+    @declarative('columns')  # 'columns' is the name of the keyword argument used to pass in members
     class Table(object):
         def __init__(self, columns):
             self.columns = columns
