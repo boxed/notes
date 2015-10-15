@@ -3,7 +3,7 @@ tri.declarative
 
 tri.declarative contains tools to make it easy to create declarative constructs in your code. 
 
-:code:``@declarative`
+:code:`@declarative`
 ---------------------
 
 Easily write libraries with APIs like: 
@@ -85,18 +85,61 @@ In tri.query instead this is accomplished by having kwargs with a prefix followe
 
 This design philosophy creates layers that compose cleanly without losing any of the flexibility of the layers below.
 
+To support this style of working we provide the functions :code:`extract_subkeys`, :code:`setattr_path` and :code:`getattr_path`.
+
+Strongly opinionated defaults that are easy to override
+-------------------------------------------------------
+
+Opinionated defaults means that the Right Thing is also the Easy Thing. Having defaults for URL patterns for editing of objects for example means that your URLs will be consistent because it's just simpler to go with the flow.
+
+Sometimes though you need to do something special. Maybe you need to preserve some old URL pattern that was put in place a long time ago. For cases like this it is important that strongly opinionated defaults can be overridden.
+
+And in order to make overriding defaults more flexible we support callables everywhere we can. More on that:
+
 Callables everywhere
 --------------------
 
 In order to create nice declarative code that still works for dynamic situations some things needs to be specified as behaviors, not as static data. To make this easy we aim to make all configuration parameters support both a value directly but also accept callables. The evaluation from a callable to the concrete value is performed as late as possible to enable maximum amount of dynamic behavior.
+
+Layered à la carte customization
+--------------------------------
+
+A common problem with many library designs is that they fall into two categories:
+
+- Lots and lots of boilerplate to get going (e.g. Win32 API)
+- Super easy to get going, but if you want to customize something you have to rewrite huge chunks or even the entire thing (.NET GUI tables, djangos ModelForm)
+
+We believe it doesn't have to be like this. An example of a design that handles this nicely is tri.form. You can create a form easily like this:
+
+.. code:: python
+
+    form = Form.from_model(data=request.GET, model=Foo)
+    
+but at the same time you can go in and set some specific option on a field that was auto generated:
+
+.. code:: python
+
+    form = Form.from_model(data=request.GET, model=Foo, some_field_name__help_text='Help text')
+    
+Another example is in tri.table where you can configure the rendering of an HTML table on these levels (and you can use none to all of them at the same time!):
+
+- cell_value: how to extract the value to be rendered from a row
+- cell_format: how to format the extracted value into a string
+- cell_template: an HTML template to render the contents of the :code:`td` freely
+- row_template: template for the :code:`tr`
+- table_template: template for the entire :code:`table` tag
+
+(There are other configuration options, but these are enough to demonstrate the point)
+
+This type of API design creates a smooth gradient from just-give-me-something to I'll-configure-it-fully-myself. 
 
 Immutability
 ------------
 
 When writing declarative definitions for what you want with lambdas and then evaluating them, it's very important that nothing of the evaluated state persists until the next run through of the code. Having all the APIs for declarative structures being immutable makes sure that mistakes are caught easily.
 
-Things that relate to eachother should be close together
---------------------------------------------------------
+Things that relate to each other should be close together
+---------------------------------------------------------
 
 A good example for code where this rule is not applied is django forms:
 
