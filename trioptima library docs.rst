@@ -1,10 +1,10 @@
 tri.* design philosophy
 =======================
 
-Usages of :code:`__` syntax
----------------------
+Namespaces are one honking great idea
+-------------------------------------
 
-We really like the syntax in Django queries where you can do :code:`Q(foo__bar=1)` to traverse attributes or table relations. We think this syntax can be used much more generally. For example in tri.form you can use the :code:`__` syntax to easily create forms that can edit fields in other tables. Say you have a :code:`User` model but you store other data in another model called :code:`UserDetails` then you can do :code:`user_details__eye_color = Field()` in your form to access that property. 
+We really like the syntax in Django queries where you can do :code:`Foo.objects.filter(foo__bar=1)` to traverse attributes or table relations. We think this syntax can be used much more generally. For example in tri.form you can use the :code:`__` syntax to easily create forms that can edit fields in other tables. Say you have a :code:`User` model but you store other data in another model called :code:`UserDetails` then you can do :code:`user_details__eye_color = Field()` in your form to access that property. 
 
 But we also use it to expose configurability of underlying layers from the layers above. An example of this is in tri.query you can declare a :code:`Variable` which is a thing you can search for. This can have an HTML GUI implemented by a tri.form :code:`Field`. Now, say you want to change something in the display of this GUI. Normally in an OOP world you have to subclass :code:`Field` to create your changed behavior, then subclass :code:`Variable` to use your new class as the GUI. This becomes a lot of code, especially if this configuration is a one-off! 
 
