@@ -8,11 +8,11 @@ We really like the syntax in Django queries where you can do :code:`Foo.objects.
 
 But we also use it to expose configurability of underlying layers from the layers above. An example of this is in tri.query you can declare a :code:`Variable` which is a thing you can search for. This can have an HTML GUI implemented by a tri.form :code:`Field`. Now, say you want to change something in the display of this GUI. Normally in an OOP world you have to subclass :code:`Field` to create your changed behavior, then subclass :code:`Variable` to use your new class as the GUI. This becomes a lot of code, especially if this configuration is a one-off! 
 
-In tri.query instead this is accomplished by having kwargs with a prefix followed by :code:`__` dispatched to the underlying library. Example: :code:`foo = Variable(form_field__required=True)`. The :code:`Variable` class knows nothing about the :code:`required` parameters. It only needs to know that kwargs starting with :code:`form_field__` are dispatched to :code:`Field`. This can be done in many layers.
+In tri.query instead this is accomplished by having kwargs with a prefix followed by :code:`__` dispatched to the underlying library. Example: :code:`foo = Variable(gui__required=True)`. The :code:`Variable` class knows nothing about the :code:`required` parameters. It only needs to know that kwargs starting with :code:`gui__` are dispatched to :code:`Field`. One function can take several of these namespaces and dispatch to underlying functions, and the dispatch will also cleanly compose so you can jump many layers. We have examples of this in tri.table usage where we do something like `Column(query__gui__label='foo', bulk__label='foo')` where the `Column` constructor dispatches `query__` and `bulk__` below and the code that handles `query__` in turn dipatches `gui__`. 
 
 This design philosophy creates layers that compose cleanly without losing any of the flexibility of the layers below.
 
-To support this style of working we provide the functions :code:`extract_subkeys`, :code:`setattr_path` and :code:`getattr_path`.
+To support this style of working we provide the functions :code:`collect_namespaces`, :code:`extract_subkeys`, :code:`setattr_path` and :code:`getattr_path`.
 
 Strongly opinionated defaults that are easy to override
 -------------------------------------------------------
@@ -27,6 +27,8 @@ Callables everywhere
 --------------------
 
 In order to create nice declarative code that still works for dynamic situations some things needs to be specified as behaviors, not as static data. To make this easy we aim to make all configuration parameters support both a value directly but also accept callables. The evaluation from a callable to the concrete value is performed as late as possible to enable maximum amount of dynamic behavior.
+
+An example of this is to hide columns in a table if the logged in user isn't an administrator.
 
 Layered à la carte customization
 --------------------------------
@@ -50,9 +52,9 @@ but at the same time you can go in and set some specific option on a field that 
     
 Another example is in tri.table where you can configure the rendering of an HTML table on these levels (and you can use none to all of them at the same time!):
 
-- cell_value: how to extract the value to be rendered from a row
-- cell_format: how to format the extracted value into a string
-- cell_template: an HTML template to render the contents of the :code:`td` freely
+- cell__value: how to extract the value to be rendered from a row
+- cell__format: how to format the extracted value into a string
+- cell__template: an HTML template to render the contents of the :code:`td` freely
 - row_template: template for the :code:`tr`
 - table_template: template for the entire :code:`table` tag
 
@@ -64,6 +66,8 @@ Immutability
 ------------
 
 When writing declarative definitions for what you want with lambdas and then evaluating them, it's very important that nothing of the evaluated state persists until the next run through of the code. Having all the APIs for declarative structures being immutable makes sure that mistakes are caught easily.
+
+See the class Frozen from tri.struct.
 
 Things that relate to each other should be close together
 ---------------------------------------------------------
